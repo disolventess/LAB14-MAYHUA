@@ -1,32 +1,38 @@
-name: Build and Deploy .NET Application
+name: Publicar aplicación .NET 8
 
 on:
   push:
-    branches:
-      - main # Automáticamente se ejecuta cuando se suben cambios a la rama principal
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  PROJECT_PATH: Lab14-JoseTincopa/Lab14-JoseTincopa.csproj
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out code
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v7
 
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '8.0'
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '8.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Restaurar dependencias
+        run: dotnet restore "$PROJECT_PATH"
 
-    - name: Build application
-      run: dotnet build --configuration Release
+      - name: Compilar en Release
+        run: dotnet build "$PROJECT_PATH" -c Release --no-restore
 
-    - name: Publish application
-      run: dotnet publish --configuration Release --output ./published
+      - name: Publicar aplicación
+        run: dotnet publish "$PROJECT_PATH" -c Release --no-build -o ./published
 
-    - name: Deploy to server (ejemplo de despliegue)
-      run: |
-        scp -r ./published username@server:/path/to/deploy
+      - name: Guardar archivos publicados
+        uses: actions/upload-artifact@v7
+        with:
+          name: publicacion-net8
+          path: ./published/
+          if-no-files-found: error
