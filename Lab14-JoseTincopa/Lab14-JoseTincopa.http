@@ -1,0 +1,6 @@
+@Lab14_JoseTincopa_HostAddress = http://localhost:5182
+
+GET {{Lab14_JoseTincopa_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
